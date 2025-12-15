@@ -1,0 +1,107 @@
+/* RESET BÁSICO */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* FONDO GENERAL (igual estilo que index) */
+body {
+    background: linear-gradient(to right, #7bfee8, #4eff9b);
+    min-height: 100vh;
+}
+
+/* BOTÓN VOLVER */
+.btn-volver {
+    background: white;
+    color: black;
+    padding: 10px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-volver:hover {
+    background: black;
+    color: white;
+}
+
+/* CONTENEDOR CENTRAL */
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 80px 20px 40px;
+}
+
+/* ENCABEZADO */
+header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.logo {
+    font-size: 42px;
+    font-weight: bold;
+    color: white;
+    -webkit-text-stroke: 1px black;
+}
+
+header h1 {
+    font-size: 32px;
+}
+
+.lead {
+    margin-top: 10px;
+    color: #333;
+}
+
+/* TARJETAS */
+.card {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    border-radius: 14px;
+    margin: 40px 0 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.card h2 {
+    margin-bottom: 12px;
+}
+
+/* LISTAS */
+ul {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+/* IMÁGENES */
+section img {
+    border-radius: 14px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+    margin-bottom: 20px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .logo {
+        font-size: 36px;
+    }
+
+    header h1 {
+        font-size: 26px;
+    }
+
+    section img {
+        width: 90% !important;
+    }
+}

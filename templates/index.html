@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>DRAGON.CES</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style/estilos1.css') }}">
+</head>
+
+<body class="fondo-degradado">
+    <header class="top-bar">
+    <div class="logo">
+        DOC.NTA
+    </div>
+
+    <nav class="top-nav">
+        <!-- Redes sociales -->
+        <a href="https://www.instagram.com/dragonx.ces?igsh=bDN4ZHB0MThuaGg1" target="_blank">Instagram</a>
+        <a href="https://www.youtube.com" target="_blank">YouTube</a>
+        <a href="https://www.facebook.com" target="_blank">Facebook</a>
+        <a href="https://www.tiktok.com" target="_blank">TikTok</a>
+
+        <!-- Página interna Flask -->
+        <a href="{{ url_for('version') }}">Versión</a>
+
+        <!-- URL externa -->
+        <a href="https://www.gob.mx" target="_blank">Sitio externo</a>
+    </nav>
+</header>
+
+
+<!-- LOGO DEBAJO DE LA BARRA -->
+<img src="{{ url_for('static', filename='img/CES.png') }}"
+     alt="Logo"
+     class="logo-flotante">
+<main class="page-content">
+    <!-- resto del contenido -->
+</main>
+
+<img src="{{ url_for('static', filename='img/nta.png') }}"
+     alt="Logo"
+     class="logo-flotante2">
+
+<main class="container">
+
+    <!-- ENCABEZADO -->
+    <header class="header">
+        <h1 class="texto-contorno" style="font-size:60px;">DRAGON.CES</h1>
+        <h2>DOC.NTA</h2>
+        <p>¡Bienvenido!</p>
+    </header>
+
+    <!-- MENÚ -->
+    <nav class="menu">
+        <a class="btn" href="{{ url_for('conceptos') }}">Conceptos</a>
+        <a class="btn" href="{{ url_for('contra') }}">???</a>
+        <a class="btn" href="{{ url_for('formulario') }}">Denuncias</a>
+        <a class="btn" href="{{ url_for('juego') }}">juego didactico</a>
+    </nav>
+
+    <!-- NOTICIAS -->
+    <section class="noticias">
+        <article class="card">
+            <h3>Santa Fe enfrenta una situación crítica</h3>
+            <p>
+                Santa Fe enfrenta una situación crítica en la gestión de residuos
+                con más de 400 basurales a cielo abierto...
+                <a href="{{ url_for('formulario') }}">Leer más</a>
+            </p>
+
+        </article>
+
+        <article class="card">
+            <h3>Regalos ecológicos</h3>
+            <p>
+                Ideas sustentables para grandes y chicos que cuidan el planeta
+                y promueven un consumo consciente...
+                <a href="{{ url_for('formulario') }}">Leer más</a>
+            </p>
+        </article>
+    </section>
+
+    <!-- MENSAJE -->
+    <section class="mensaje">
+        <p><em>“Solo con nosotros encuentras”</em></p>
+        <p><strong>Código Exclusivo y Seguro</strong></p>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>
+            Colegio de Estudios Científicos y Tecnológicos<br>
+            del Estado de México
+        </p>
+    </footer>
+
+</main>
+
+</body>
+</html>

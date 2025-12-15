@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Acceso | DRAGON.CES</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Georgia", serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(90deg, #7bfee8, #4eff9b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #f3f4f3;
+            border-radius: 15px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            background: #f0f0f0;
+            cursor: pointer;
+            transition: 0._toggle 0.3s;
+        }
+
+        button:hover {
+            background: rgb(200, 200, 200);
+        }
+
+        .error {
+            color: #b00020;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="contenedor">
+    <h1>DRAGON.CES</h1>
+    <h2>DOC.NTA</h2>
+
+    <div class="card">
+        <h3>Acceso Restringido</h3>
+        <br>
+
+        {% if error %}
+            <div class="error">Contraseña incorrecta</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('contra') }}">
+            <input type="password" name="password" placeholder="Ingresa la contraseña" required>
+            <button type="submit">Entrar</button>
+        </form>
+    </div>
+
+    <div class="footer">
+        <p>“Solo con nosotros encuentras”</p>
+        <strong>Código Exclusivo y Seguro</strong>
+    </div>
+</div>
+
+</body>
+</html>

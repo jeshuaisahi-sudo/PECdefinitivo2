@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secret EMU</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #86bbfc;
+      --secondary-color: #03DAC6;
+      --background-color: #121212;
+      --surface-color: #1e1e1e;
+      --text-color: #ffffff;
+      --error-color: #CF6679;
+      --success-color: #4CAF50;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    @keyframes gradientBg {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Press Start 2P', cursive;
+      color: var(--text-color);
+      overflow: hidden;
+      background: linear-gradient(-45deg, #21defb, #75e87a);
+      background-size: 400% 400%;
+      animation: gradientBg 15s ease infinite;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 15px;
+      gap: 15px;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: clamp(1.2rem, 4vw, 2rem);
+      color: var(--primary-color);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+      margin-bottom: 10px;
+    }
+
+    #game-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    #game-container {
+      position: relative;
+      flex: 1;
+      background-color: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 4px solid var(--primary-color);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game {
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+    }
+
+    #loader {
+      position: absolute;
+      border: 8px solid rgba(255,255,255,0.2);
+      border-top: 8px solid var(--primary-color);
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .hidden { display: none !important; }
+
+    #info-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background-color: rgba(0,0,0,0.7);
+      border-radius: 12px;
+      font-size: 10px;
+      gap: 15px;
+      flex-wrap: wrap;
+      backdrop-filter: blur(10px);
+    }
+
+    #rom-info {
+      color: var(--secondary-color);
+      flex: 1;
+      min-width: 150px;
+    }
+
+    #core-select {
+      background-color: var(--surface-color);
+      color: var(--text-color);
+      border: 2px solid var(--primary-color);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 9px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #core-select:hover {
+      border-color: var(--secondary-color);
+      transform: translateY(-2px);
+    }
+
+    #controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      padding: 15px;
+      background-color: rgba(0,0,0,0.7);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn {
+      cursor: pointer;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, var(--primary-color), #9d6fd8);
+      color: var(--background-color);
+      border: none;
+      border-radius: 10px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Press Start 2P', cursive;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(187, 134, 252, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn:hover:not(:disabled)::before {
+      left: 100%;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px #86bbfc;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      background: linear-gradient(135deg, #555, #444);
+      cursor: not-allowed;
+      opacity: 0.5;
+      box-shadow: none;
+    }
+
+    .btn i {
+      font-size: 12px;
+    }
+
+    #status {
+      text-align: center;
+      font-size: 11px;
+      color: var(--secondary-color);
+      padding: 10px;
+      background-color: rgba(0,0,0,0.5);
+      border-radius: 8px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .notification {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background-color: var(--success-color);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      font-size: 10px;
+      z-index: 1000;
+      animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s forwards;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(400px); opacity: 0; }
+    }
+
+    #easter-egg {
+      position: fixed;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+      color: white;
+      padding: 20px 35px;
+      border-radius: 15px;
+      font-size: 14px;
+      z-index: 1001;
+      transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    }
+
+    #easter-egg.show {
+      top: 40px;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      #app {
+        padding: 10px;
+        gap: 10px;
+      }
+
+      h1 {
+        font-size: 1rem;
+        margin-bottom: 8px;
+      }
+
+      #controls {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 12px;
+      }
+
+      .btn {
+        padding: 10px;
+        font-size: 8px;
+        gap: 6px;
+      }
+
+      .btn i {
+        font-size: 10px;
+      }
+
+      #info-panel {
+        font-size: 8px;
+        padding: 10px;
+        gap: 10px;
+      }
+
+      #core-select {
+        font-size: 7px;
+        padding: 6px 10px;
+      }
+
+      #status {
+        font-size: 9px;
+        padding: 8px;
+      }
+
+      .notification {
+        bottom: 15px;
+        right: 15px;
+        font-size: 8px;
+        padding: 12px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .btn {
+        font-size: 7px;
+        padding: 8px;
+      }
+
+      .btn i {
+        font-size: 9px;
+      }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--surface-color);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--secondary-color);
+    }
+
+    /* Drop zone effect */
+    #game-container.drag-over {
+      border-color: var(--secondary-color);
+      background-color: rgba(3, 218, 198, 0.05);
+      box-shadow: 0 0 40px rgba(3, 218, 198, 0.3);
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <a href="{{ url_for('index') }}" class="back-btn" 
+  style="
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #8ce9c6, #47ffea);
+  color: #fff;
+  text-decoration: none;
+  font-size: 9px;
+  border-radius: 10px;
+  font-family: 'Press Start 2P', cursive;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+">
+  <i class="fa-solid fa-arrow-left"></i> Volver al inicio
+</a>
+
+
+  <div id="app">
+    <header>
+      <h1>Secret EMU</h1>
+    </header>
+
+    <div id="game-wrapper">
+      <div id="game-container">
+        <div id="loader" class="hidden"></div>
+        <div id="game"></div>
+      </div>
+
+      <div id="info-panel">
+        <div id="rom-info">Cargar ROM</div>
+        <select id="core-select" title="Selecione o console">
+          <option value="nes">NES</option>
+          <option value="snes">SNES</option>
+          <option value="gb">Game Boy</option>
+          <option value="gbc">Game Boy Color</option>
+          <option value="gba">Game Boy Advance</option>
+          <option value="vb">Virtual Boy</option>
+          <option value="n64">Nintendo 64</option>
+          <option value="nds">Nintendo DS</option>
+          <option value="segaMS">Master System</option>
+          <option value="segaMD">Mega Drive</option>
+          <option value="segaCD">Sega CD</option>
+          <option value="segaGG">Game Gear</option>
+          <option value="sega32x">32X</option>
+          <option value="segaSaturn">Saturn</option>
+          <option value="psx">PlayStation</option>
+          <option value="atari2600">Atari 2600</option>
+          <option value="atari7800">Atari 7800</option>
+          <option value="lynx">Lynx</option>
+          <option value="pce">PC Engine</option>
+          <option value="ws">WonderSwan</option>
+          <option value="ngp">Neo Geo Pocket</option>
+        </select>
+      </div>
+
+      <div id="controls">
+        <button id="uploadBtn" class="btn">
+          <i class="fa-solid fa-upload"></i> Cargar ROM
+        </button>
+        <button id="saveBtn" class="btn" disabled>
+          <i class="fa-solid fa-floppy-disk"></i> Guardar
+        </button>
+        <button id="loadBtn" class="btn" disabled>
+          <i class="fa-solid fa-folder-open"></i> Cargar
+        </button>
+        <button id="screenshotBtn" class="btn" disabled>
+          <i class="fa-solid fa-camera"></i> Screenshot
+        </button>
+        <button id="muteBtn" class="btn">
+          <i class="fa-solid fa-volume-high"></i>sonido
+        </button>
+        <button id="resetBtn" class="btn" disabled>
+          <i class="fa-solid fa-rotate-right"></i> Reiniciar
+        </button>
+        <button id="fullscreenBtn" class="btn">
+          <i class="fa-solid fa-expand"></i> pantalla completa
+        </button>
+        <button id="helpBtn" class="btn">
+          <i class="fa-solid fa-circle-question"></i> Ayuda
+        </button>
+      </div>
+
+      <div id="status">Selecione o console e carregue uma ROM • Arraste arquivos para a tela</div>
+    </div>
+  </div>
+
+  <div id="easter-egg">🎉 CÓDIGO KONAMI ATIVADO! 🎉</div>
+  <input type="file" id="fileInput" accept=".nes,.snes,.sfc,.gb,.gbc,.gba,.n64,.z64,.nds,.sms,.md,.bin,.gg,.32x,.cue,.iso,.a26,.a78,.lnx,.pce,.ws,.ngp,.zip" style="display:none">
+
+  <script>
+    // Configuração EmulatorJS
+    window.EJS_player = "#game";
+    window.EJS_core = "nes";
+    window.EJS_gameName = "Gringo Retro Arcade";
+    window.EJS_color = "#BB86FC";
+    window.EJS_startOnLoaded = true;
+    window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
+
+    // Estado global
+    const state = {
+      isRunning: false,
+      isMuted: false,
+      currentRom: null,
+      saves: {}
+    };
+
+    // Elementos DOM
+    const $ = id => document.getElementById(id);
+    const elements = {
+      coreSelect: $('core-select'),
+      uploadBtn: $('uploadBtn'),
+      saveBtn: $('saveBtn'),
+      loadBtn: $('loadBtn'),
+      screenshotBtn: $('screenshotBtn'),
+      muteBtn: $('muteBtn'),
+      resetBtn: $('resetBtn'),
+      fullscreenBtn: $('fullscreenBtn'),
+      helpBtn: $('helpBtn'),
+      fileInput: $('fileInput'),
+      status: $('status'),
+      romInfo: $('rom-info'),
+      gameContainer: $('game-container'),
+      loader: $('loader'),
+      easterEgg: $('easter-egg')
+    };
+
+    // Utilitários
+    const notify = (msg, type = 'success') => {
+      const notif = document.createElement('div');
+      notif.className = 'notification';
+      notif.style.backgroundColor = type === 'error' ? '#CF6679' : '#4CAF50';
+      notif.textContent = msg;
+      document.body.appendChild(notif);
+      setTimeout(() => notif.remove(), 3000);
+    };
+
+    const updateStatus = (msg, isError = false) => {
+      elements.status.textContent = msg;
+      elements.status.style.color = isError ? '#CF6679' : '#03DAC6';
+    };
+
+    const setButtons = enabled => {
+      [elements.saveBtn, elements.loadBtn, elements.screenshotBtn, elements.resetBtn].forEach(btn => {
+        btn.disabled = !enabled;
+      });
+      state.isRunning = enabled;
+    };
+
+    // Seleção de console
+    elements.coreSelect.addEventListener('change', function() {
+      window.EJS_core = this.value;
+      updateStatus(`Console: ${this.options[this.selectedIndex].text}`);
+    });
+
+    // Upload de ROM
+    elements.uploadBtn.addEventListener('click', () => elements.fileInput.click());
+
+    elements.fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      updateStatus(`Carregando ${file.name}...`);
+      elements.loader.classList.remove('hidden');
+      setButtons(false);
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        window.EJS_gameUrl = e.target.result;
+        state.currentRom = file.name;
+        elements.romInfo.textContent = `🎮 ${file.name}`;
+        loadEmulator();
+      };
+      reader.onerror = () => {
+        updateStatus('Erro ao carregar arquivo', true);
+        elements.loader.classList.add('hidden');
+        notify('Erro ao carregar ROM', 'error');
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    // Carregar emulador
+    function loadEmulator() {
+      const oldScript = document.querySelector('script[src*="loader.js"]');
+      if (oldScript) oldScript.remove();
+      $('game').innerHTML = '';
+
+      const script = document.createElement('script');
+      script.src = "https://cdn.emulatorjs.org/stable/data/loader.js";
+      script.onerror = () => {
+        updateStatus('Erro ao carregar emulador', true);
+        elements.loader.classList.add('hidden');
+        notify('Erro ao carregar emulador', 'error');
+      };
+      document.body.appendChild(script);
+    }
+
+    // Callback quando jogo inicia
+    window.EJS_onGameStart = function() {
+      updateStatus('🎮 Jogo iniciado! Divirta-se!');
+      elements.loader.classList.add('hidden');
+      setButtons(true);
+      notify('Jogo iniciado com sucesso!');
+    };
+
+    // Salvar estado
+    elements.saveBtn.addEventListener('click', () => {
+      if (!state.currentRom) return;
+      
+      if (!state.saves[state.currentRom]) {
+        state.saves[state.currentRom] = [];
+      }
+      
+      state.saves[state.currentRom].push({
+        timestamp: new Date().toLocaleString('pt-BR'),
+        data: 'save_data_placeholder'
+      });
+      
+      notify('💾 Estado salvo com sucesso!');
+      updateStatus(`Save criado: ${state.saves[state.currentRom].length} saves disponíveis`);
+    });
+
+    // Carregar estado
+    elements.loadBtn.addEventListener('click', () => {
+      if (!state.currentRom || !state.saves[state.currentRom]?.length) {
+        notify('Nenhum save disponível', 'error');
+        return;
+      }
+      
+      const lastSave = state.saves[state.currentRom][state.saves[state.currentRom].length - 1];
+      notify(`📂 Save carregado: ${lastSave.timestamp}`);
+      updateStatus('Save carregado com sucesso!');
+    });
+
+    // Screenshot
+    elements.screenshotBtn.addEventListener('click', () => {
+      try {
+        const canvas = document.querySelector('#game canvas');
+        if (canvas) {
+          canvas.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${state.currentRom || 'screenshot'}_${Date.now()}.png`;
+            a.click();
+            URL.revokeObjectURL(url);
+            notify('📸 Screenshot salvo!');
+          });
+        } else {
+          notify('Erro ao capturar screenshot', 'error');
+        }
+      } catch (error) {
+        notify('Erro ao capturar screenshot', 'error');
+      }
+    });
+
+    // Mute
+    elements.muteBtn.addEventListener('click', () => {
+      state.isMuted = !state.isMuted;
+      elements.muteBtn.innerHTML = state.isMuted
+        ? '<i class="fa-solid fa-volume-xmark"></i> Som'
+        : '<i class="fa-solid fa-volume-high"></i> Som';
+      notify(state.isMuted ? '🔇 Som desativado' : '🔊 Som ativado');
+    });
+
+    // Reset
+    elements.resetBtn.addEventListener('click', () => {
+      if (confirm('Reiniciar o jogo? O progresso não salvo será perdido.')) {
+        const oldScript = document.querySelector('script[src*="loader.js"]');
+        if (oldScript) oldScript.remove();
+        $('game').innerHTML = '';
+        elements.romInfo.textContent = 'Carregue uma ROM para começar';
+        updateStatus('Selecione o console e carregue uma ROM');
+        elements.fileInput.value = '';
+        setButtons(false);
+        state.currentRom = null;
+        notify('🔄 Jogo reiniciado');
+      }
+    });
+
+    // Fullscreen
+    elements.fullscreenBtn.addEventListener('click', () => {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        elements.gameContainer.requestFullscreen().catch(err => {
+          notify('Erro ao ativar tela cheia', 'error');
+        });
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      const isFs = !!document.fullscreenElement;
+      elements.fullscreenBtn.innerHTML = isFs
+        ? '<i class="fa-solid fa-compress"></i> Sair'
+        : '<i class="fa-solid fa-expand"></i> Tela Cheia';
+    });
+
+    // Ajuda
+    elements.helpBtn.addEventListener('click', () => {
+      alert(`🎮 CONTROLES DO EMULADOR
+
+⌨️ TECLADO:
+• Setas: Movimento
+• Z/X: Botões A/B
+• A/S: Botões L/R
+• Enter: Start
+• Shift: Select
+• Backspace: Menu
+
+🎯 ATALHOS:
+• Ctrl+S: Salvar estado
+• Ctrl+L: Carregar estado
+• Ctrl+R: Reiniciar
+• F: Tela cheia
+• M: Mute
+• P: Screenshot
+
+📱 MOBILE:
+• Toque na tela para controles virtuais
+
+💡 DICAS:
+• Arraste ROMs para a tela
+• Salve estados frequentemente
+• Use F11 para fullscreen do navegador`);
+    });
+
+    // Drag & Drop
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+      elements.gameContainer.addEventListener(evt, e => {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    });
+
+    ['dragenter', 'dragover'].forEach(evt => {
+      elements.gameContainer.addEventListener(evt, () => {
+        elements.gameContainer.classList.add('drag-over');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(evt => {
+      elements.gameContainer.addEventListener(evt, () => {
+        elements.gameContainer.classList.remove('drag-over');
+      });
+    });
+
+    elements.gameContainer.addEventListener('drop', e => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        const validExts = ['.nes', '.snes', '.sfc', '.gb', '.gbc', '.gba', '.n64', '.z64', '.nds', '.sms', '.md', '.bin', '.gg', '.32x', '.iso', '.cue', '.a26', '.a78', '.lnx', '.pce', '.ws', '.ngp', '.zip'];
+        
+        if (validExts.some(ext => file.name.toLowerCase().endsWith(ext))) {
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          elements.fileInput.files = dt.files;
+          elements.fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+          notify(`📁 ${file.name} carregado!`);
+        } else {
+          notify('Formato de arquivo inválido', 'error');
+        }
+      }
+    });
+
+    // Atalhos de teclado
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's' && state.isRunning) {
+        e.preventDefault();
+        elements.saveBtn.click();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'l' && state.isRunning) {
+        e.preventDefault();
+        elements.loadBtn.click();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'r' && state.isRunning) {
+        e.preventDefault();
+        elements.resetBtn.click();
+      }
+      if (e.key === 'f' && !e.ctrlKey && !e.metaKey) {
+        elements.fullscreenBtn.click();
+      }
+      if (e.key === 'm' && !e.ctrlKey && !e.metaKey) {
+        elements.muteBtn.click();
+      }
+      if (e.key === 'p' && !e.ctrlKey && !e.metaKey && state.isRunning) {
+        elements.screenshotBtn.click();
+      }
+
+      // Prevenir scroll com setas
+      if (state.isRunning && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    // Easter Egg: Konami Code
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let konamiIndex = 0;
+
+    document.addEventListener('keydown', e => {
+      if (e.key.toLowerCase() === konamiCode[konamiIndex].toLowerCase()) {
+        konamiIndex++;
+        if (konamiIndex === konamiCode.length) {
+          activateEasterEgg();
+          konamiIndex = 0;
+        }
+      } else {
+        konamiIndex = 0;
+      }
+    });
+
+    function activateEasterEgg() {
+      elements.easterEgg.classList.add('show');
+      
+      const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'];
+      let idx = 0;
+      const interval = setInterval(() => {
+        document.documentElement.style.setProperty('--primary-color', colors[idx++ % colors.length]);
+      }, 150);
+
+      setTimeout(() => {
+        elements.easterEgg.classList.remove('show');
+        clearInterval(interval);
+        document.documentElement.style.setProperty('--primary-color', '#BB86FC');
+      }, 3000);
+
+      notify('🎉 Código Konami Ativado! 🎉');
+    }
+
+    // Gamepad detection
+    window.addEventListener('gamepadconnected', e => {
+      notify(`🎮 Controle conectado: ${e.gamepad.id.substring(0, 30)}...`);
+    });
+
+    window.addEventListener('gamepaddisconnected', () => {
+      notify('Controle desconectado', 'error');
+    });
+
+    // Prevenir saída acidental
+    window.addEventListener('beforeunload', e => {
+      if (state.isRunning) {
+        e.preventDefault();
+        e.returnValue = 'Você tem um jogo em andamento. Deseja realmente sair?';
+        return e.returnValue;
+      }
+    });
+
+    // Inicialização
+    setTimeout(() => {
+      notify('💡 Dica: Use Ctrl+S para salvar rapidamente!');
+    }, 2000);
+  </script>
+</body>
+</html>

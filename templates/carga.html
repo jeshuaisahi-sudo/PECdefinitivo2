@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Carga</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/carga.css') }}">
+</head>
+
+<body class="fondo-degradado">
+
+<div class="contenedor">
+    <img src="{{ url_for('static', filename='img/CES.png') }}"
+         alt="Logo Dragon CES"
+         class="logo">
+
+    <h1 class="texto texto-contorno" style="font-size: 60px;">
+        ¡Bienvenido!
+    </h1>
+</div>
+
+<script>
+/* Espera a que termine la animación + 2s */
+setTimeout(() => {
+    window.location.href = "{{ url_for('index') }}";
+}, 4000);
+</script>
+
+</body>
+</html>

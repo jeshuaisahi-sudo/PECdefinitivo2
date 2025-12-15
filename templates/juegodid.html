@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego Didáctico</title>
+
+    <!-- TU CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/estilos.css') }}">
+
+    <!-- Fuente del juego -->
+    <link href="https://fonts.googleapis.com/css?family=Squada+One&display=swap" rel="stylesheet">
+</head>
+
+<body class="fondo-degradado">
+
+<div class="container">
+
+    <header class="header">
+        <h1 class="texto-contorno">Juego Didáctico</h1>
+        <a href="{{ url_for('index') }}" class="btn">Volver</a>
+    </header>
+
+    <div>
+        <h1>Flappy Bird</h1>
+    </div>
+
+    <div class="contenedor-juego">
+        <canvas id="canvas" width="276" height="414"></canvas>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='game.js') }}"></script>
+</body>
+</html>
